@@ -1,0 +1,20 @@
+{
+  "payments": [
+    {
+      "allocated_mw": 500.0,
+      "annual_payment_musd": 349.004,
+      "externality_score": 43303.788472,
+      "offtaker_id": "mesa_ai",
+      "payment_per_mwh_usd": 86.61
+    },
+    {
+      "allocated_mw": 500.0,
+      "annual_payment_musd": 348.923,
+      "externality_score": 43293.920151,
+      "offtaker_id": "northstar_compute",
+      "payment_per_mwh_usd": 86.59
+    }
+  ],
+  "run_id": "v0-baseline-3eac2d52",
+  "scenario_id": "v0_1gw_3offtakers"
+}

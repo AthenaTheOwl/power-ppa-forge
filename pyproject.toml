@@ -1,0 +1,28 @@
+[project]
+name = "power-ppa-forge"
+version = "0.1.0"
+description = "Reference simulator and data-report artifacts for multi-buyer PPA coordination."
+readme = "README.md"
+requires-python = ">=3.11"
+dependencies = []
+
+[project.scripts]
+power-ppa-forge = "power_ppa_forge.cli:main"
+
+[dependency-groups]
+dev = [
+  "pytest>=8.0",
+]
+
+[tool.uv]
+package = true
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+
+[tool.hatch.build.targets.wheel]
+packages = ["power_ppa_forge"]
+
+[build-system]
+requires = ["hatchling"]
+build-backend = "hatchling.build"
