@@ -1,0 +1,16 @@
+version: ppf-leakage-v0
+threat_model: honest-but-curious-other-bidders
+allowed_disclosures:
+  - scenario_id
+  - offtaker_id
+  - won
+  - allocation_mw
+  - own_payment_per_mwh_usd
+  - aggregate_complementarity_score
+forbidden_fields:
+  - bid_price_per_mwh
+  - load_shape
+  - max_capacity_mw
+  - counterfactual_allocations
+  - losing_bidder_rank
+receipt_artifact: runs/v0_baseline/receipts.json

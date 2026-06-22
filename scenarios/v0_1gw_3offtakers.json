@@ -1,0 +1,61 @@
+{
+  "scenario_id": "v0_1gw_3offtakers",
+  "schema_version": "0.1",
+  "asset": {
+    "name": "Notional 1 GW SMR",
+    "technology": "SMR",
+    "capacity_mw": 1000,
+    "capacity_factor": 0.92,
+    "commercial_operation_year": 2032,
+    "target_dscr": 1.35,
+    "project_cost_usd_billion": 7.4
+  },
+  "auction": {
+    "mechanism": "multi-buyer-vickrey-bounded-leak",
+    "tranche_options_mw": [250, 500, 750, 1000],
+    "complementarity_weight": 4.5
+  },
+  "offtakers": [
+    {
+      "id": "northstar_compute",
+      "display_name": "Northstar Compute",
+      "max_capacity_mw": 500,
+      "bid_price_per_mwh": 92.0,
+      "load_shape": [
+        0.84, 0.82, 0.81, 0.8, 0.8, 0.82,
+        0.9, 0.98, 1.07, 1.14, 1.19, 1.2,
+        1.18, 1.15, 1.1, 1.04, 0.99, 0.95,
+        0.92, 0.9, 0.88, 0.87, 0.86, 0.85
+      ]
+    },
+    {
+      "id": "mesa_ai",
+      "display_name": "Mesa AI",
+      "max_capacity_mw": 500,
+      "bid_price_per_mwh": 88.0,
+      "load_shape": [
+        1.08, 1.06, 1.04, 1.01, 0.98, 0.95,
+        0.91, 0.88, 0.86, 0.84, 0.83, 0.84,
+        0.87, 0.91, 0.96, 1.01, 1.07, 1.13,
+        1.18, 1.21, 1.2, 1.17, 1.13, 1.1
+      ]
+    },
+    {
+      "id": "harbor_cloud",
+      "display_name": "Harbor Cloud",
+      "max_capacity_mw": 500,
+      "bid_price_per_mwh": 86.0,
+      "load_shape": [
+        0.98, 0.98, 0.99, 0.99, 1.0, 1.0,
+        1.01, 1.01, 1.02, 1.02, 1.02, 1.01,
+        1.01, 1.0, 1.0, 0.99, 0.99, 0.98,
+        0.98, 0.98, 0.99, 0.99, 1.0, 1.0
+      ]
+    }
+  ],
+  "capital_case": {
+    "baseline": "bilateral-nda",
+    "bilateral_nda_required_equity_share": 0.42,
+    "bounded_leak_required_equity_share": 0.34
+  }
+}

@@ -1,0 +1,1 @@
+{"report_id":"capital_impact_v0","scenario":"scenarios/v0_1gw_3offtakers.json","report_md":"reports/capital_impact.md","run_dir":"runs/v0_baseline","verdict":"notional reference mechanism validates; real calibration deferred"}

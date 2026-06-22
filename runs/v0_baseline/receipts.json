@@ -1,0 +1,30 @@
+{
+  "receipts": [
+    {
+      "aggregate_complementarity_score": 0.945466,
+      "allocation_mw": 500.0,
+      "offtaker_id": "northstar_compute",
+      "payment_per_mwh_usd": 86.59,
+      "scenario_id": "v0_1gw_3offtakers",
+      "won": true
+    },
+    {
+      "aggregate_complementarity_score": 0.945466,
+      "allocation_mw": 500.0,
+      "offtaker_id": "mesa_ai",
+      "payment_per_mwh_usd": 86.61,
+      "scenario_id": "v0_1gw_3offtakers",
+      "won": true
+    },
+    {
+      "aggregate_complementarity_score": 0.945466,
+      "allocation_mw": 0.0,
+      "offtaker_id": "harbor_cloud",
+      "payment_per_mwh_usd": null,
+      "scenario_id": "v0_1gw_3offtakers",
+      "won": false
+    }
+  ],
+  "run_id": "v0-baseline-3eac2d52",
+  "scenario_id": "v0_1gw_3offtakers"
+}
