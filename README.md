@@ -29,21 +29,43 @@ v0.1 shipped — runnable, minimal. The first real deliverable is in place; the 
 
 ## How to run
 
-Placeholder. Will land in spec 0003. The intended invocation:
+```bash
+# readable ranked view of the committed run (read-only, offline, no args)
+python -m power_ppa_forge show
+
+# validate the canonical scenario
+python -m power_ppa_forge validate
+
+# regenerate the run artifacts and capital-impact report
+python -m power_ppa_forge simulate --out runs/v0_baseline
+python -m power_ppa_forge capital-impact --out reports/capital_impact.md
+```
+
+`show` reads `runs/v0_baseline/` and prints the syndication result: which
+offtakers cleared capacity on the notional 1 GW asset, their clearing prices
+under the bounded-leak Vickrey mechanism, and the equity the mechanism frees
+up versus bilateral NDA chains.
+
+## live demo
+
+A Streamlit page (`streamlit_app.py`) renders the same result interactively:
+allocation metrics, a ranked offtaker table, and the capital headline. It reads
+the committed `runs/v0_baseline/` directly - no network, no secrets.
 
 ```bash
-python -m power_ppa_forge scenario create \
-  --asset notional-1gw-smr \
-  --offtakers 3 \
-  --out scenarios/v0_1gw_3offtakers.json
-python -m power_ppa_forge simulate \
-  --scenario scenarios/v0_1gw_3offtakers.json \
-  --mechanism multi-buyer-vickrey-bounded-leak \
-  --out runs/v0/
-python -m power_ppa_forge capital-impact \
-  --run runs/v0/ \
-  --out reports/capital_impact.md
+pip install -r requirements.txt
+streamlit run streamlit_app.py
 ```
+
+Deploy on Streamlit Community Cloud: New app -> repo `AthenaTheOwl/power-ppa-forge`,
+branch `main`, main file `streamlit_app.py`.
+
+<!-- live-url: -->
+
+## Capital-impact report
+
+The committed run produces `reports/capital_impact.md` (allocation table,
+capital-structure delta, leakage-receipt check).
 
 ## Layout
 
