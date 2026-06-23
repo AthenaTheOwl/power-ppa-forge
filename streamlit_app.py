@@ -11,10 +11,18 @@ branch main, main file streamlit_app.py.
 """
 from __future__ import annotations
 
+import copy
 import json
 from pathlib import Path
 
 import streamlit as st
+
+from power_ppa_forge.models import (
+    ScenarioValidationError,
+    canonical_scenario_path,
+    validate_scenario,
+)
+from power_ppa_forge.simulator import run_simulation
 
 REPO = Path(__file__).resolve().parent
 RUN = REPO / "runs" / "v0_baseline"
@@ -124,4 +132,123 @@ st.caption(
     "complementarity - never bid prices or load shapes. the mechanism + simulator live "
     "in `power_ppa_forge/`; this page reads the committed `runs/v0_baseline/`. "
     "repo: github.com/AthenaTheOwl/power-ppa-forge"
+)
+
+# ---------------------------------------------------------------------------
+# interactive: run the real auction yourself
+#
+# everything below drives the actual engine. it builds a scenario from your
+# inputs, runs it through power_ppa_forge.models.validate_scenario (the real
+# v0.1 data contract) and power_ppa_forge.simulator.run_simulation (the real
+# vickrey allocation + payment solver) — no lookup, no hardcoded result.
+# ---------------------------------------------------------------------------
+
+st.divider()
+st.header("run the auction yourself")
+st.caption(
+    "edit each offtaker's bid and the size they can take, plus how much the asset "
+    "owner values a flat combined load. the page rebuilds a scenario and runs it "
+    "through the real solver (`power_ppa_forge.simulator.run_simulation`) — the "
+    "allocation, the bounded-leak Vickrey clearing prices, and the complementarity "
+    "score below are all recomputed live, never looked up."
+)
+
+
+@st.cache_data
+def base_scenario() -> dict:
+    """the canonical v0.1 fixture — the same one the CLI defaults to."""
+    return json.loads(canonical_scenario_path().read_text(encoding="utf-8"))
+
+
+_base = base_scenario()
+scenario = copy.deepcopy(_base)
+
+st.markdown("**asset / auction**")
+ac1, ac2 = st.columns(2)
+scenario["auction"]["complementarity_weight"] = ac1.slider(
+    "complementarity weight",
+    min_value=0.0,
+    max_value=12.0,
+    value=float(_base["auction"]["complementarity_weight"]),
+    step=0.5,
+    help=(
+        "how much the asset owner pays, per MW of capacity, for a perfectly flat "
+        "combined load shape. higher weight favours offtakers whose loads offset, "
+        "even at a lower bid."
+    ),
+)
+ac2.metric(
+    "asset capacity",
+    f"{_base['asset']['capacity_mw']:,.0f} MW",
+    help="fixed at the notional 1 GW asset; tranches must sum to exactly this.",
+)
+
+st.markdown("**offtakers** — set each bidder's price and the largest tranche they will take")
+for offtaker in scenario["offtakers"]:
+    base_off = next(o for o in _base["offtakers"] if o["id"] == offtaker["id"])
+    oc1, oc2 = st.columns([1, 1])
+    offtaker["bid_price_per_mwh"] = oc1.slider(
+        f"{offtaker['display_name']} — bid $/MWh",
+        min_value=40.0,
+        max_value=200.0,
+        value=float(base_off["bid_price_per_mwh"]),
+        step=1.0,
+        key=f"bid_{offtaker['id']}",
+    )
+    offtaker["max_capacity_mw"] = oc2.select_slider(
+        f"{offtaker['display_name']} — max tranche MW",
+        options=[250.0, 500.0, 750.0, 1000.0],
+        value=float(base_off["max_capacity_mw"]),
+        key=f"cap_{offtaker['id']}",
+    )
+
+try:
+    validate_scenario(scenario)
+    run = run_simulation(scenario)
+except ScenarioValidationError as exc:
+    st.error(f"scenario does not satisfy the v0.1 data contract: {exc}")
+    st.stop()
+except ValueError as exc:
+    st.error(f"no feasible allocation for these inputs: {exc}")
+    st.stop()
+
+live_alloc = run["allocation"]
+live_payments = run["payments"]
+won_ids = {p["offtaker_id"] for p in live_payments}
+
+lc1, lc2, lc3 = st.columns(3)
+lc1.metric("allocated", f"{sum(p['allocated_mw'] for p in live_payments):,.0f} MW")
+lc2.metric(
+    "portfolio complementarity",
+    f"{live_alloc['complementarity_score']:.3f}",
+    delta=f"{live_alloc['complementarity_score'] - alloc['complementarity_score']:+.3f} vs baseline",
+)
+lc3.metric(
+    "winning offtakers",
+    f"{len(won_ids)} of {len(scenario['offtakers'])}",
+)
+
+display_by_id = {o["id"]: o["display_name"] for o in scenario["offtakers"]}
+pay_by_id = {p["offtaker_id"]: p for p in live_payments}
+live_table = []
+for off in scenario["offtakers"]:
+    p = pay_by_id.get(off["id"])
+    live_table.append(
+        {
+            "offtaker": display_by_id[off["id"]],
+            "bid $/MWh": off["bid_price_per_mwh"],
+            "allocated MW": p["allocated_mw"] if p else 0.0,
+            "clearing price $/MWh": p["payment_per_mwh_usd"] if p else None,
+            "annual payment $M/yr": p["annual_payment_musd"] if p else None,
+            "cleared": off["id"] in won_ids,
+        }
+    )
+st.dataframe(live_table, use_container_width=True, hide_index=True)
+
+st.caption(
+    "note the Vickrey twist: a winner's clearing price is the externality it imposes "
+    "on the others, not its own bid — so the offtaker who bids highest does not "
+    "necessarily pay the most. push one bidder's price up or shrink another's tranche "
+    "and watch who clears flip live. computed by `run_simulation`, run "
+    f"`{run['run_id']}`."
 )

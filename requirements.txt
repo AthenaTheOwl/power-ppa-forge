@@ -1,4 +1,6 @@
-# Streamlit Community Cloud reads this file. The app (streamlit_app.py) reads the
-# committed runs/v0_baseline/*.json directly, so it only needs streamlit. The
-# CLI/package under power_ppa_forge/ has no third-party deps (pyproject.toml).
+# Streamlit Community Cloud reads this file. The app reads the committed
+# runs/v0_baseline/*.json AND drives the real engine live: the interactive
+# section imports power_ppa_forge.simulator.run_simulation, so the package must
+# be installable. The `.` line installs this repo as a package (see pyproject.toml).
 streamlit>=1.40
+.
