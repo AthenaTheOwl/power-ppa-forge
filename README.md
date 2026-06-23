@@ -24,10 +24,8 @@ offtakers.
 
 ## Status
 
-v0 scaffold. No implementation yet. Specs in `specs/0001-foundation/`
-name the mechanism, the leakage-bound proof obligation, and the
-benchmark instance. PR 0002 lands the mechanism spec document and
-the typed scenario schema. PR 0003+ adds the simulator.
+
+v0.1 shipped — runnable, minimal. The first real deliverable is in place; the next passes deepen it (more scenarios, real-data backfill). The entry command `python -m power_ppa_forge validate` runs. See `specs/0002-design/` for the v0.1 scope and `STATUS.md` (where present) for the current state and next-feature queue.
 
 ## How to run
 
