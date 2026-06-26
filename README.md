@@ -1,55 +1,57 @@
-# PowerPPAforge
+# power-ppa-forge
 
-An open mechanism specification, reference simulator, and white paper
-for multi-hyperscaler power-purchase-agreement coordination on long-
-duration generation (nuclear, SMR, gas-with-CCS), letting multiple
-hyperscalers co-fund and co-offtake projects whose financeability
-requires multi-counterparty offtake — without any hyperscaler
-revealing its load profile or willingness-to-pay.
+Three hyperscalers want power off the same 1,000 MW reactor. None will tell the
+others how much it needs or what it would pay — those are the two facts a lender
+needs and the two facts a competitor must never see. power-ppa-forge runs the
+auction that clears the megawatts while keeping both facts sealed.
 
-## What this is
+## What it does
 
-Single-hyperscaler-anchored nuclear deals (Meta 6.6 GW Constellation,
-AWS 1.92 GW Talen) work for the very biggest sites. The next tier of
-projects requires multi-offtaker syndication, and there is no
-primitive for it. Project finance demands offtake certainty;
-hyperscalers will not reveal load profiles to competitors. The 2026
-nuclear renaissance is bottlenecked here.
+A single buyer can anchor the very biggest nuclear deals — Meta took 6.6 GW from
+Constellation, AWS 1.92 GW from Talen. The tier below that needs several offtakers
+on one asset, and there is no mechanism for it. Project finance wants offtake
+certainty; hyperscalers will not hand rivals their load profiles to get it. That
+standoff is where a lot of long-duration generation stalls.
 
-This repo is the mechanism — a multi-buyer Vickrey-like auction on
-a long-duration generation asset with bounded leakage on each
-buyer's load profile — plus a reference simulator, plus a white
-paper modeled on a notional 1-GW SMR with three notional hyperscaler
-offtakers.
+power-ppa-forge is the mechanism that breaks it: a multi-buyer Vickrey-style
+auction over one long-duration asset, with a bounded leak on what each buyer's bid
+reveals. It ships as a runnable simulator, a mechanism spec, and a white paper
+modeled on a notional 1 GW SMR with three notional offtakers. The receipt each
+buyer gets back discloses its own id, win or loss, allocation, payment, and one
+aggregate complementarity number — never anyone's price, never anyone's load shape.
 
-## Status
+## Try it
 
-
-v0.1 shipped — runnable, minimal. The first real deliverable is in place; the next passes deepen it (more scenarios, real-data backfill). The entry command `python -m power_ppa_forge validate` runs. See `specs/0002-design/` for the v0.1 scope and `STATUS.md` (where present) for the current state and next-feature queue.
-
-## How to run
+One command, no setup, no keys. It reads the committed run and prints the result:
 
 ```bash
-# readable ranked view of the committed run (read-only, offline, no args)
 python -m power_ppa_forge show
-
-# validate the canonical scenario
-python -m power_ppa_forge validate
-
-# regenerate the run artifacts and capital-impact report
-python -m power_ppa_forge simulate --out runs/v0_baseline
-python -m power_ppa_forge capital-impact --out reports/capital_impact.md
 ```
 
-`show` reads `runs/v0_baseline/` and prints the syndication result: which
-offtakers cleared capacity on the notional 1 GW asset, their clearing prices
-under the bounded-leak Vickrey mechanism, and the equity the mechanism frees
-up versus bilateral NDA chains.
+```
+power-ppa-forge - multi-buyer PPA syndication, run v0-baseline-3eac2d52
+scenario v0_1gw_3offtakers | mechanism multi-buyer-vickrey-bounded-leak
 
-## live demo
+1000 MW allocated across 2 winning offtaker(s); 1 offtaker(s) cleared no capacity. portfolio complementarity 0.945 (1.0 = perfectly flat combined load).
+
+offtaker              allocated   clearing price   annual payment
+-----------------------------------------------------------------
+mesa_ai                   500MW $      86.61/MWh $       349.0M/yr
+northstar_compute         500MW $      86.59/MWh $       348.9M/yr
+harbor_cloud                0MW       (no clear)                -
+
+capital headline: bounded-leak Vickrey cuts required equity from 42% to 34% (8 pts) on a $7.4B project - $592M less equity to syndicate (notional v0.1).
+receipts disclose only id, win/loss, allocation, payment, and aggregate complementarity - never bid prices or load shapes.
+```
+
+Two buyers split the 1,000 MW; the third walks away with a receipt that proves it
+lost without proving anything else. The 8-point equity cut is the whole argument:
+lenders can underwrite multi-counterparty offtake without bilateral NDA chains.
+
+## Live demo
 
 A Streamlit page (`streamlit_app.py`) renders the same result interactively:
-allocation metrics, a ranked offtaker table, and the capital headline. It reads
+allocation metrics, the ranked offtaker table, and the capital headline. It reads
 the committed `runs/v0_baseline/` directly - no network, no secrets.
 
 ```bash
@@ -62,68 +64,45 @@ branch `main`, main file `streamlit_app.py`.
 
 <!-- live-url: -->
 
-## Capital-impact report
+## How it connects
 
-The committed run produces `reports/capital_impact.md` (allocation table,
-capital-structure delta, leakage-receipt check).
+power-ppa-forge sits where four things the others already do meet:
+
+- [sealed-bid-sourcing](https://github.com/AthenaTheOwl/sealed-bid-sourcing) — the
+  PSI / MPC primitives that bound how much a bid leaks.
+- [interconnect-alpha](https://github.com/AthenaTheOwl/interconnect-alpha) —
+  capacity-price calibration data, so the clearing prices aren't invented.
+- [grid-silicon](https://github.com/AthenaTheOwl/grid-silicon) — the asset side,
+  scoring whether the generation behind the auction is real or a form.
+- [agent-notary-layer](https://github.com/AthenaTheOwl/agent-notary-layer) — the
+  receipt schema that makes the auction audit trail hold up.
+
+## Run it in full
+
+```bash
+# validate the canonical scenario
+python -m power_ppa_forge validate
+
+# regenerate the run artifacts and capital-impact report
+python -m power_ppa_forge simulate --out runs/v0_baseline
+python -m power_ppa_forge capital-impact --out reports/capital_impact.md
+```
+
+The committed run produces `reports/capital_impact.md`: the allocation table, the
+capital-structure delta, and the leakage-receipt check.
 
 ## Layout
 
 ```
-power-ppa-forge/
-  README.md
-  LICENSE
-  AGENTS.md
-  .gitignore
-  specs/
-    0001-foundation/
-      requirements.md
-      design.md
-      tasks.md
-      acceptance.md
-  docs/
-    first-pr.md
-  paper/                 # arrives in PR 0002
-  mechanism/             # mechanism spec doc; PR 0002
-  scenarios/             # benchmark instance JSON
-  src/                   # arrives in PR 0003
+power_ppa_forge/      package: cli, simulator, scoring, models
+mechanism/            MECHANISM-v0.md + leakage_bounds.yaml
+paper/                the white paper
+scenarios/            v0_1gw_3offtakers.json — the benchmark instance
+schemas/              scenario.schema.json
+runs/v0_baseline/     allocation, payments, receipts
+reports/              capital_impact.md + .jsonl
+specs/  docs/  tests/
 ```
-
-## Why this exists
-
-`procurement-negotiation-lab` is a working multi-attribute auction
-simulator. `sealed-bid-sourcing` brings PSI / MPC primitives to
-procurement. `grid-silicon` and `interconnect-alpha` provide the
-power-market data layer. MIT SDM systems framing covers the
-project-finance side. No portfolio combines all four. This repo
-sits at that intersection.
-
-The mechanism is the moat. Legal opinion and project-finance
-compatibility are the hard part. Capacity-price calibration data
-from `interconnect-alpha` closes the loop.
-
-## First artifact
-
-Open-source mechanism spec plus reference simulator plus white paper
-modeled on a notional 1-GW SMR with three notional hyperscaler
-offtakers. Show how the strategyproofness bound translates to
-capital-structure consequence: lower required equity tranche when
-the auction is bounded-leak Vickrey, because lenders can underwrite
-multi-counterparty offtake without bilateral NDA chains.
-
-## Plausibility
-
-This is the most ambitious single repo in the portfolio. The
-mechanism could become the standard if it lands; it could also
-remain a paper. v0 deliberately produces an artifact (paper +
-simulator) rather than chasing customer deployment.
-
-## Compounds with
-
-- `sealed-bid-sourcing` (shares MPC / bounded-leakage primitives)
-- `interconnect-alpha` (capacity-price calibration data)
-- `grid-silicon` (asset-side phantom-vs-real scoring)
-- `agent-notary-layer` (receipt schema for auction audit trail)
 
 ## License
 
