@@ -62,16 +62,26 @@ def run_show(run_dir: Path) -> int:
         )
         return 1
 
-    allocation = json.loads(allocation_path.read_text(encoding="utf-8"))
-    payments = json.loads(payments_path.read_text(encoding="utf-8"))["payments"]
-    receipts = (
-        json.loads(receipts_path.read_text(encoding="utf-8"))["receipts"]
-        if receipts_path.is_file()
-        else []
-    )
+    # A run dir can exist with truncated or hand-edited artifacts; surface that
+    # as an actionable message instead of a raw decoder/key traceback.
+    try:
+        allocation = json.loads(allocation_path.read_text(encoding="utf-8"))
+        payments = json.loads(payments_path.read_text(encoding="utf-8"))["payments"]
+        receipts = (
+            json.loads(receipts_path.read_text(encoding="utf-8"))["receipts"]
+            if receipts_path.is_file()
+            else []
+        )
+        alloc = allocation["allocation"]
+        capital = allocation["capital_impact"]
+    except (json.JSONDecodeError, KeyError) as exc:
+        print(
+            f"BAD_RUN: {run_dir} has corrupt or incomplete artifacts ({exc}) — "
+            "re-run `python -m power_ppa_forge simulate`",
+            file=sys.stderr,
+        )
+        return 1
 
-    alloc = allocation["allocation"]
-    capital = allocation["capital_impact"]
     won = sorted(payments, key=lambda p: p["allocated_mw"], reverse=True)
     allocated_mw = sum(p["allocated_mw"] for p in won)
     lost = [r for r in receipts if not r["won"]]
