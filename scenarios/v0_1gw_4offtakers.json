@@ -1,0 +1,73 @@
+{
+  "scenario_id": "v0_1gw_4offtakers",
+  "schema_version": "0.1",
+  "asset": {
+    "name": "Notional 1 GW SMR",
+    "technology": "SMR",
+    "capacity_mw": 1000,
+    "capacity_factor": 0.92,
+    "commercial_operation_year": 2032,
+    "target_dscr": 1.35,
+    "project_cost_usd_billion": 7.4
+  },
+  "auction": {
+    "mechanism": "multi-buyer-vickrey-bounded-leak",
+    "tranche_options_mw": [250, 500, 750, 1000],
+    "complementarity_weight": 4.5
+  },
+  "offtakers": [
+    {
+      "id": "copperline_compute",
+      "display_name": "Copperline Compute",
+      "max_capacity_mw": 500,
+      "bid_price_per_mwh": 89.03,
+      "load_shape": [
+        0.82, 0.81, 0.8, 0.8, 0.82, 0.87,
+        0.96, 1.05, 1.13, 1.18, 1.21, 1.2,
+        1.16, 1.1, 1.04, 0.99, 0.95, 0.91,
+        0.88, 0.86, 0.85, 0.84, 0.83, 0.82
+      ]
+    },
+    {
+      "id": "keystone_ai",
+      "display_name": "Keystone AI",
+      "max_capacity_mw": 500,
+      "bid_price_per_mwh": 89.02,
+      "load_shape": [
+        1.08, 1.07, 1.05, 1.02, 0.98, 0.94,
+        0.9, 0.87, 0.85, 0.84, 0.85, 0.88,
+        0.93, 0.99, 1.06, 1.13, 1.19, 1.22,
+        1.21, 1.18, 1.14, 1.12, 1.11, 1.1
+      ]
+    },
+    {
+      "id": "harbor_vector",
+      "display_name": "Harbor Vector",
+      "max_capacity_mw": 250,
+      "bid_price_per_mwh": 89.01,
+      "load_shape": [
+        1.18, 1.19, 1.2, 1.2, 1.18, 1.13,
+        1.04, 0.95, 0.87, 0.82, 0.79, 0.8,
+        0.84, 0.9, 0.96, 1.01, 1.05, 1.09,
+        1.12, 1.14, 1.15, 1.16, 1.17, 1.18
+      ]
+    },
+    {
+      "id": "summit_inference",
+      "display_name": "Summit Inference",
+      "max_capacity_mw": 250,
+      "bid_price_per_mwh": 89.0,
+      "load_shape": [
+        0.92, 0.93, 0.95, 0.98, 1.02, 1.06,
+        1.1, 1.13, 1.15, 1.16, 1.15, 1.12,
+        1.07, 1.01, 0.94, 0.87, 0.81, 0.78,
+        0.79, 0.82, 0.86, 0.88, 0.89, 0.9
+      ]
+    }
+  ],
+  "capital_case": {
+    "baseline": "bilateral-nda",
+    "bilateral_nda_required_equity_share": 0.42,
+    "bounded_leak_required_equity_share": 0.34
+  }
+}
