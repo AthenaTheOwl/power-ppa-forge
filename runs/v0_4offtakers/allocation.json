@@ -1,0 +1,24 @@
+{
+  "allocation": {
+    "allocation_mw": {
+      "copperline_compute": 250.0,
+      "harbor_vector": 250.0,
+      "keystone_ai": 250.0,
+      "summit_inference": 250.0
+    },
+    "complementarity_score": 1.0,
+    "revenue_score": 89015.0,
+    "score": 93515.0,
+    "weighted_complementarity": 4500.0
+  },
+  "capital_impact": {
+    "bilateral_nda_required_equity_share": 0.42,
+    "bounded_leak_required_equity_share": 0.34,
+    "equity_reduction_musd": 592.0,
+    "equity_share_delta_percentage_points": 8.0,
+    "project_cost_musd": 7400.0
+  },
+  "mechanism": "multi-buyer-vickrey-bounded-leak",
+  "run_id": "v0-baseline-d1876ab5",
+  "scenario_id": "v0_1gw_4offtakers"
+}

@@ -1,0 +1,34 @@
+{
+  "payments": [
+    {
+      "allocated_mw": 250.0,
+      "annual_payment_musd": 178.914,
+      "externality_score": 22199.045335,
+      "offtaker_id": "copperline_compute",
+      "payment_per_mwh_usd": 88.8
+    },
+    {
+      "allocated_mw": 250.0,
+      "annual_payment_musd": 180.103,
+      "externality_score": 22346.370443,
+      "offtaker_id": "harbor_vector",
+      "payment_per_mwh_usd": 89.39
+    },
+    {
+      "allocated_mw": 250.0,
+      "annual_payment_musd": 178.652,
+      "externality_score": 22167.043097,
+      "offtaker_id": "keystone_ai",
+      "payment_per_mwh_usd": 88.67
+    },
+    {
+      "allocated_mw": 250.0,
+      "annual_payment_musd": 179.841,
+      "externality_score": 22314.469583,
+      "offtaker_id": "summit_inference",
+      "payment_per_mwh_usd": 89.26
+    }
+  ],
+  "run_id": "v0-baseline-d1876ab5",
+  "scenario_id": "v0_1gw_4offtakers"
+}

@@ -1,0 +1,20 @@
+{
+  "payments": [
+    {
+      "allocated_mw": 500.0,
+      "annual_payment_musd": 358.634,
+      "externality_score": 44500.0,
+      "offtaker_id": "atlas_inference",
+      "payment_per_mwh_usd": 89.0
+    },
+    {
+      "allocated_mw": 500.0,
+      "annual_payment_musd": 357.828,
+      "externality_score": 44400.0,
+      "offtaker_id": "solstice_compute",
+      "payment_per_mwh_usd": 88.8
+    }
+  ],
+  "run_id": "v0-baseline-15af3b41",
+  "scenario_id": "v0_1gw_2offtakers"
+}
