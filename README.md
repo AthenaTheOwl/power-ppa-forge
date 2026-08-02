@@ -16,7 +16,8 @@ standoff is where a lot of long-duration generation stalls.
 power-ppa-forge is the mechanism that breaks it: a multi-buyer Vickrey-style
 auction over one long-duration asset, with a bounded leak on what each buyer's bid
 reveals. It ships as a runnable simulator, a mechanism spec, and a white paper
-modeled on a notional 1 GW SMR with three notional offtakers. The receipt each
+tested against matched two-, three-, and four-offtaker fixtures on the same
+notional 1 GW SMR. The receipt each
 buyer gets back discloses its own id, win or loss, allocation, payment, and one
 aggregate complementarity number — never anyone's price, never anyone's load shape.
 
@@ -26,6 +27,8 @@ One command, no setup, no keys. It reads the committed run and prints the result
 
 ```bash
 python -m power_ppa_forge show
+python -m power_ppa_forge show --run runs/v0_2offtakers
+python -m power_ppa_forge show --run runs/v0_4offtakers
 ```
 
 ```
@@ -50,9 +53,10 @@ lenders can underwrite multi-counterparty offtake without bilateral NDA chains.
 
 ## Live demo
 
-A Streamlit page (`streamlit_app.py`) renders the same result interactively:
+A Streamlit page (`streamlit_app.py`) renders the three-offtaker baseline interactively:
 allocation metrics, the ranked offtaker table, and the capital headline. It reads
-the committed `runs/v0_baseline/` directly - no network, no secrets.
+the committed `runs/v0_baseline/` directly - no network, no secrets. The CLI exposes
+all three cohort sizes; the browser remains the canonical baseline view.
 
 ```bash
 pip install -r requirements.txt
@@ -83,7 +87,11 @@ power-ppa-forge sits where four things the others already do meet:
 # validate the canonical scenario
 python -m power_ppa_forge validate
 
-# regenerate the run artifacts and capital-impact report
+# inspect the matched cohort-size fixtures
+python -m power_ppa_forge show --run runs/v0_2offtakers
+python -m power_ppa_forge show --run runs/v0_4offtakers
+
+# regenerate the canonical run artifacts and capital-impact report
 python -m power_ppa_forge simulate --out runs/v0_baseline
 python -m power_ppa_forge capital-impact --out reports/capital_impact.md
 ```
@@ -97,9 +105,9 @@ capital-structure delta, and the leakage-receipt check.
 power_ppa_forge/      package: cli, simulator, scoring, models
 mechanism/            MECHANISM-v0.md + leakage_bounds.yaml
 paper/                the white paper
-scenarios/            v0_1gw_3offtakers.json — the benchmark instance
+scenarios/            matched 2-, 3-, and 4-offtaker benchmark instances
 schemas/              scenario.schema.json
-runs/v0_baseline/     allocation, payments, receipts
+runs/                 matched run artifacts; v0_baseline is the 3-buyer case
 reports/              capital_impact.md + .jsonl
 specs/  docs/  tests/
 ```
