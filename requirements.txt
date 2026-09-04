@@ -4,3 +4,7 @@
 # be installable. The `.` line installs this repo as a package (see pyproject.toml).
 streamlit>=1.40
 .
+
+# required by scripts/validate_data_conformance.py (DEC: data-conformance gate)
+jsonschema
+pyyaml
