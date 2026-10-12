@@ -4,7 +4,7 @@
       "aggregate_complementarity_score": 1.0,
       "allocation_mw": 250.0,
       "offtaker_id": "copperline_compute",
-      "payment_per_mwh_usd": 88.8,
+      "payment_per_mwh_usd": 87.97,
       "scenario_id": "v0_1gw_4offtakers",
       "won": true
     },
@@ -12,7 +12,7 @@
       "aggregate_complementarity_score": 1.0,
       "allocation_mw": 250.0,
       "offtaker_id": "keystone_ai",
-      "payment_per_mwh_usd": 88.67,
+      "payment_per_mwh_usd": 87.93,
       "scenario_id": "v0_1gw_4offtakers",
       "won": true
     },
@@ -20,7 +20,7 @@
       "aggregate_complementarity_score": 1.0,
       "allocation_mw": 250.0,
       "offtaker_id": "harbor_vector",
-      "payment_per_mwh_usd": 89.39,
+      "payment_per_mwh_usd": 88.53,
       "scenario_id": "v0_1gw_4offtakers",
       "won": true
     },
@@ -28,7 +28,7 @@
       "aggregate_complementarity_score": 1.0,
       "allocation_mw": 250.0,
       "offtaker_id": "summit_inference",
-      "payment_per_mwh_usd": 89.26,
+      "payment_per_mwh_usd": 88.54,
       "scenario_id": "v0_1gw_4offtakers",
       "won": true
     }

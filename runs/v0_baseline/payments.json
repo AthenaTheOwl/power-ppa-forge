@@ -2,17 +2,17 @@
   "payments": [
     {
       "allocated_mw": 500.0,
-      "annual_payment_musd": 349.004,
-      "externality_score": 43303.788472,
+      "annual_payment_musd": 345.861,
+      "externality_score": 42915.352153,
       "offtaker_id": "mesa_ai",
-      "payment_per_mwh_usd": 86.61
+      "payment_per_mwh_usd": 85.83
     },
     {
       "allocated_mw": 500.0,
-      "annual_payment_musd": 348.923,
-      "externality_score": 43293.920151,
+      "annual_payment_musd": 346.505,
+      "externality_score": 42996.554963,
       "offtaker_id": "northstar_compute",
-      "payment_per_mwh_usd": 86.59
+      "payment_per_mwh_usd": 85.99
     }
   ],
   "run_id": "v0-baseline-3eac2d52",

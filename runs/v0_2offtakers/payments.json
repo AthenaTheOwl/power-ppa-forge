@@ -2,17 +2,17 @@
   "payments": [
     {
       "allocated_mw": 500.0,
-      "annual_payment_musd": 358.634,
-      "externality_score": 44500.0,
+      "annual_payment_musd": 355.491,
+      "externality_score": 44111.563681,
       "offtaker_id": "atlas_inference",
-      "payment_per_mwh_usd": 89.0
+      "payment_per_mwh_usd": 88.22
     },
     {
       "allocated_mw": 500.0,
-      "annual_payment_musd": 357.828,
-      "externality_score": 44400.0,
+      "annual_payment_musd": 355.451,
+      "externality_score": 44102.634812,
       "offtaker_id": "solstice_compute",
-      "payment_per_mwh_usd": 88.8
+      "payment_per_mwh_usd": 88.21
     }
   ],
   "run_id": "v0-baseline-15af3b41",

@@ -39,8 +39,8 @@ scenario v0_1gw_3offtakers | mechanism multi-buyer-vickrey-bounded-leak
 
 offtaker              allocated   clearing price   annual payment
 -----------------------------------------------------------------
-mesa_ai                   500MW $      86.61/MWh $       349.0M/yr
-northstar_compute         500MW $      86.59/MWh $       348.9M/yr
+mesa_ai                   500MW $      85.83/MWh $       345.9M/yr
+northstar_compute         500MW $      85.99/MWh $       346.5M/yr
 harbor_cloud                0MW       (no clear)                -
 
 capital headline: bounded-leak Vickrey cuts required equity from 42% to 34% (8 pts) on a $7.4B project - $592M less equity to syndicate (notional v0.1).
