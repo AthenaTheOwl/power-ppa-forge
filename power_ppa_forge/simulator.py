@@ -51,23 +51,46 @@ def score_allocation(scenario: dict[str, Any], allocation_mw: dict[str, float]) 
         * scenario["asset"]["capacity_mw"]
         * complementarity_score
     )
-    score = revenue_score + weighted_complementarity
-    return {
+    curtailable_mw = compute_curtailable_mw(scenario, allocation_mw)
+    weighted_curtailment = scenario["auction"].get("curtailment_weight", 0.0) * curtailable_mw
+    score = revenue_score + weighted_complementarity + weighted_curtailment
+    scored = {
         "allocation_mw": {key: round(value, 3) for key, value in allocation_mw.items() if value > 0},
         "score": round(score, 6),
         "revenue_score": round(revenue_score, 6),
         "complementarity_score": round(complementarity_score, 6),
         "weighted_complementarity": round(weighted_complementarity, 6),
     }
+    # Only a scenario that declares the term reports it, so scenarios written
+    # before the term existed keep byte-identical run artifacts.
+    if "curtailment_weight" in scenario["auction"]:
+        scored["curtailable_mw"] = round(curtailable_mw, 6)
+        scored["weighted_curtailment"] = round(weighted_curtailment, 6)
+    return scored
+
+
+def compute_curtailable_mw(scenario: dict[str, Any], allocation_mw: dict[str, float]) -> float:
+    """Allocated MW each winner has agreed to shed during the asset's stress hours."""
+    bidders = {bidder["id"]: bidder for bidder in scenario["offtakers"]}
+    return sum(
+        capacity * bidders[bidder_id].get("curtailable_fraction", 0.0)
+        for bidder_id, capacity in allocation_mw.items()
+    )
 
 
 def compute_complementarity(scenario: dict[str, Any], allocation_mw: dict[str, float]) -> float:
     bidders = {bidder["id"]: bidder for bidder in scenario["offtakers"]}
+    stress_hours = set(scenario["asset"].get("stress_hours", ()))
     hourly = []
     for hour in range(24):
         total = 0.0
         for bidder_id, capacity in allocation_mw.items():
-            total += capacity * bidders[bidder_id]["load_shape"][hour]
+            load = capacity * bidders[bidder_id]["load_shape"][hour]
+            if hour in stress_hours:
+                # The curtailable share is shed on a stress day; flatness is
+                # measured on the load the asset actually serves.
+                load *= 1.0 - bidders[bidder_id].get("curtailable_fraction", 0.0)
+            total += load
         hourly.append(total)
 
     mean_load = sum(hourly) / len(hourly)

@@ -51,6 +51,24 @@ Two buyers split the 1,000 MW; the third walks away with a receipt that proves i
 lost without proving anything else. The 8-point equity cut is the whole argument:
 lenders can underwrite multi-counterparty offtake without bilateral NDA chains.
 
+## The right not to run
+
+A buyer can now bid the right not to run. An offtaker that agrees to shed part of
+its load during the asset's stress hours gets credit for it in the score, and its
+receipt still reveals nothing about its load shape. In the curtailable fixture,
+harbor_cloud offers to shed 30% from 17:00 to 21:00 and takes mesa_ai's 500 MW:
+
+```bash
+python -m power_ppa_forge show --run runs/v0_curtail
+```
+
+The weight on that credit is notional and flips the auction by itself somewhere
+between 6 and 8, so [the mechanism spec](mechanism/MECHANISM-v0.md) publishes the
+sweep. Each winner pays its critical value, the lowest bid that still wins with
+its credit counted: harbor_cloud bids $86/MWh and pays $85.44. And v0 prices the
+promise, not delivery on it: nothing dispatches, meters or penalizes the shed.
+Without the curtailment fields, the score is exactly the one the other fixtures use.
+
 ## Live demo
 
 A Streamlit page (`streamlit_app.py`) renders the three-offtaker baseline interactively:
@@ -93,6 +111,7 @@ python -m power_ppa_forge show --run runs/v0_4offtakers
 
 # regenerate the canonical run artifacts and capital-impact report
 python -m power_ppa_forge simulate --out runs/v0_baseline
+python -m power_ppa_forge simulate --scenario scenarios/v0_1gw_3offtakers_curtail.json --out runs/v0_curtail
 python -m power_ppa_forge capital-impact --out reports/capital_impact.md
 ```
 
@@ -105,9 +124,9 @@ capital-structure delta, and the leakage-receipt check.
 power_ppa_forge/      package: cli, simulator, scoring, models
 mechanism/            MECHANISM-v0.md + leakage_bounds.yaml
 paper/                the white paper
-scenarios/            matched 2-, 3-, and 4-offtaker benchmark instances
+scenarios/            matched 2-, 3-, and 4-offtaker benchmark instances, plus a curtailable 3
 schemas/              scenario.schema.json
-runs/                 matched run artifacts; v0_baseline is the 3-buyer case
+runs/                 matched run artifacts; v0_baseline is the 3-buyer case, v0_curtail its curtailable twin
 reports/              capital_impact.md + .jsonl
 specs/  docs/  tests/
 ```

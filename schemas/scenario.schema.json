@@ -17,7 +17,12 @@
         "capacity_factor": {"type": "number", "exclusiveMinimum": 0},
         "commercial_operation_year": {"type": "integer"},
         "target_dscr": {"type": "number", "exclusiveMinimum": 0},
-        "project_cost_usd_billion": {"type": "number", "exclusiveMinimum": 0}
+        "project_cost_usd_billion": {"type": "number", "exclusiveMinimum": 0},
+        "stress_hours": {
+          "type": "array",
+          "items": {"type": "integer", "minimum": 0, "maximum": 23},
+          "uniqueItems": true
+        }
       }
     },
     "auction": {
@@ -30,7 +35,8 @@
           "items": {"type": "number", "exclusiveMinimum": 0},
           "minItems": 1
         },
-        "complementarity_weight": {"type": "number", "exclusiveMinimum": 0}
+        "complementarity_weight": {"type": "number", "exclusiveMinimum": 0},
+        "curtailment_weight": {"type": "number", "minimum": 0}
       }
     },
     "offtakers": {
@@ -49,7 +55,8 @@
             "items": {"type": "number", "exclusiveMinimum": 0},
             "minItems": 24,
             "maxItems": 24
-          }
+          },
+          "curtailable_fraction": {"type": "number", "minimum": 0, "maximum": 1}
         }
       }
     },
