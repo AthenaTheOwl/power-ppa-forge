@@ -81,17 +81,20 @@ def compute_complementarity(scenario: dict[str, Any], allocation_mw: dict[str, f
 def compute_payments(scenario: dict[str, Any], allocation_mw: dict[str, float]) -> list[dict[str, Any]]:
     payments: list[dict[str, Any]] = []
     capacity_factor = scenario["asset"]["capacity_factor"]
+    bids = {bidder["id"]: bidder["bid_price_per_mwh"] for bidder in scenario["offtakers"]}
+    selected_score = score_allocation(scenario, allocation_mw)["score"]
 
     for bidder_id, capacity in allocation_mw.items():
-        without_bidder = best_allocation(scenario, exclude_bidder=bidder_id)
-        others_allocation = {
-            other_id: other_capacity
-            for other_id, other_capacity in allocation_mw.items()
-            if other_id != bidder_id
-        }
-        others_score = score_allocation(scenario, others_allocation)
-        externality = max(0.0, without_bidder["score"] - others_score["score"])
-        payment_per_mwh = round(externality / capacity, 2)
+        # Critical value: the best score the field reaches with this bidder's
+        # price bid at zero, less the selected allocation's score without the
+        # bidder's own revenue. Over the tranches it holds, that is the lowest
+        # price at which it still wins each one, so it never exceeds the bid.
+        # Both scores measure flatness on a full allocation, the winner included.
+        rest_of_selected = selected_score - capacity * bids[bidder_id]
+        zero_bid_best = best_allocation(_with_bid(scenario, bidder_id, 0.0))["score"]
+        externality = max(0.0, zero_bid_best - rest_of_selected)
+        # Cent rounding is the one way past the bid; a sub-cent bid caps it.
+        payment_per_mwh = min(round(externality / capacity, 2), bids[bidder_id])
         annual_payment_musd = round(payment_per_mwh * capacity * 8760 * capacity_factor / 1_000_000, 3)
         payments.append(
             {
@@ -229,6 +232,14 @@ def _candidate_allocations(scenario: dict[str, Any], exclude_bidder: str | None)
         }
         candidates.append(score_allocation(scenario, allocation))
     return candidates
+
+
+def _with_bid(scenario: dict[str, Any], bidder_id: str, price: float) -> dict[str, Any]:
+    offtakers = [
+        {**bidder, "bid_price_per_mwh": price} if bidder["id"] == bidder_id else bidder
+        for bidder in scenario["offtakers"]
+    ]
+    return {**scenario, "offtakers": offtakers}
 
 
 def _run_id(scenario: dict[str, Any]) -> str:

@@ -8,8 +8,8 @@ All numeric values in this artifact are notional v0.1 fixture values.
 
 | Offtaker | Capacity | Payment |
 |---|---:|---:|
-| `northstar_compute` | 500 MW (notional) | $86.59/MWh (notional) |
-| `mesa_ai` | 500 MW (notional) | $86.61/MWh (notional) |
+| `northstar_compute` | 500 MW (notional) | $85.99/MWh (notional) |
+| `mesa_ai` | 500 MW (notional) | $85.83/MWh (notional) |
 
 ## Capital Structure
 

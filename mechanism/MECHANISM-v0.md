@@ -30,16 +30,26 @@ highest-scoring feasible allocation wins.
 
 ## Payment rule
 
-For each winner, the simulator computes the best feasible allocation
-without that bidder. The winner's payment is the positive externality
-between that counterfactual score and the score available to the other
-winners under the selected allocation. The implementation reports this
-externality as a per-MWh payment and as an annual notional payment.
+Each winner pays its critical value. The simulator sets the winner's
+price bid to zero, holds every other input fixed, and finds the best
+feasible score. The payment is that score less the selected
+allocation's score without the winner's own bid revenue (allocated MW
+times bid price). Over the tranches the winner holds, this is the
+lowest price at which it would still win each one, so no winner pays
+more than it bid. The implementation reports the payment per MWh,
+capped at the bid against cent rounding, and as an annual notional
+payment.
 
-This is a Vickrey-style externality payment. The v0 mechanism relies on
-the standard incentive argument for Vickrey and VCG mechanisms, with the
-additional caveat that the scoring function is fixed and public before
-bids are submitted.
+The score is bid revenue plus a term that depends only on the
+allocation, so this is the VCG payment with a Clarke pivot (Clarke
+1971). For the price dimension, with the bidder's load shape and
+capacity held fixed, the allocation is monotone in the bid and the
+payment is the critical value, so bidding the true price is a dominant
+strategy (Myerson 1981). Load shapes and capacities also enter the
+score; v0 makes no incentive claim about them. The scoring function is
+fixed and public before bids are submitted. An earlier rule measured
+flatness without the winner; `decisions/DEC-PPF-003-critical-value-payments.md`
+records why it was replaced.
 
 ## Leakage boundary
 

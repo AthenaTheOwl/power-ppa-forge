@@ -36,9 +36,10 @@ def test_baseline_allocation_and_score_are_pinned() -> None:
 
 
 def test_baseline_payments_match_committed_golden() -> None:
-    # Live payments must equal the committed golden run: this pins the Vickrey
-    # externality (max clamp + externality/capacity per-MWh divide) and the
-    # 8760-hour annual_payment constant against the run in runs/v0_baseline.
+    # Live payments must equal the committed golden run: this pins the
+    # critical-value payment (zero-bid best score less the rest of the selected
+    # allocation, per MWh) and the 8760-hour annual_payment constant against
+    # the run in runs/v0_baseline. DEC-PPF-003 records the rule change.
     run = run_simulation(load_scenario())
     committed = json.loads(
         (REPO_ROOT / "runs" / "v0_baseline" / "payments.json").read_text(encoding="utf-8")
@@ -47,9 +48,9 @@ def test_baseline_payments_match_committed_golden() -> None:
     assert run["payments"] == committed
     # Spell out the pinned values so the intent survives even if the golden moves.
     mesa = next(p for p in run["payments"] if p["offtaker_id"] == "mesa_ai")
-    assert mesa["payment_per_mwh_usd"] == 86.61
-    assert mesa["externality_score"] == 43303.788472
-    assert mesa["annual_payment_musd"] == 349.004
+    assert mesa["payment_per_mwh_usd"] == 85.83
+    assert mesa["externality_score"] == 42915.352153
+    assert mesa["annual_payment_musd"] == 345.861
 
 
 def test_receipts_do_not_leak_bid_or_profile_fields() -> None:
