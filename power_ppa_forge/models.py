@@ -60,6 +60,9 @@ def validate_scenario(data: dict[str, Any]) -> None:
         raise ScenarioValidationError("auction tranche cannot exceed asset capacity")
 
     _positive_number(auction.get("complementarity_weight"), "auction.complementarity_weight")
+    if "curtailment_weight" in auction:
+        _non_negative_number(auction["curtailment_weight"], "auction.curtailment_weight")
+    stress_hours = _stress_hours(asset.get("stress_hours", []))
 
     if not isinstance(offtakers, list) or not offtakers:
         raise ScenarioValidationError("offtakers must be a non-empty list")
@@ -80,6 +83,17 @@ def validate_scenario(data: dict[str, Any]) -> None:
             raise ScenarioValidationError(f"{bidder_id}.load_shape must contain 24 hourly values")
         for hour, value in enumerate(shape):
             _positive_number(value, f"{bidder_id}.load_shape[{hour}]")
+        if "curtailable_fraction" in bidder:
+            fraction = _non_negative_number(
+                bidder["curtailable_fraction"], f"{bidder_id}.curtailable_fraction"
+            )
+            if fraction > 1:
+                raise ScenarioValidationError(f"{bidder_id}.curtailable_fraction must be at most 1")
+            if fraction > 0 and not stress_hours:
+                # A promise to shed load in no hour is worth nothing; refuse to score it.
+                raise ScenarioValidationError(
+                    f"{bidder_id}.curtailable_fraction needs asset.stress_hours to shed into"
+                )
         max_capacities.append(max_capacity)
 
     if sum(max_capacities) < capacity_mw:
@@ -122,3 +136,20 @@ def _positive_number(value: Any, field: str) -> float:
     if not isinstance(value, (int, float)) or isinstance(value, bool) or value <= 0:
         raise ScenarioValidationError(f"{field} must be a positive number")
     return float(value)
+
+
+def _non_negative_number(value: Any, field: str) -> float:
+    if not isinstance(value, (int, float)) or isinstance(value, bool) or value < 0:
+        raise ScenarioValidationError(f"{field} must be a non-negative number")
+    return float(value)
+
+
+def _stress_hours(value: Any) -> list[int]:
+    if not isinstance(value, list):
+        raise ScenarioValidationError("asset.stress_hours must be a list of hours 0-23")
+    for hour in value:
+        if not isinstance(hour, int) or isinstance(hour, bool) or not 0 <= hour <= 23:
+            raise ScenarioValidationError("asset.stress_hours must be a list of hours 0-23")
+    if len(set(value)) != len(value):
+        raise ScenarioValidationError("asset.stress_hours must not repeat an hour")
+    return value

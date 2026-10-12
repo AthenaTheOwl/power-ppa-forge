@@ -1,0 +1,20 @@
+{
+  "payments": [
+    {
+      "allocated_mw": 500.0,
+      "annual_payment_musd": 344.289,
+      "externality_score": 42719.624083,
+      "offtaker_id": "harbor_cloud",
+      "payment_per_mwh_usd": 85.44
+    },
+    {
+      "allocated_mw": 500.0,
+      "annual_payment_musd": 356.579,
+      "externality_score": 44246.182056,
+      "offtaker_id": "northstar_compute",
+      "payment_per_mwh_usd": 88.49
+    }
+  ],
+  "run_id": "v0-baseline-315a68a6",
+  "scenario_id": "v0_1gw_3offtakers_curtail"
+}

@@ -15,7 +15,10 @@ COMMITTED_SCENARIOS = [
     "v0_1gw_3offtakers.json",
     "v0_1gw_2offtakers.json",
     "v0_1gw_4offtakers.json",
+    "v0_1gw_3offtakers_curtail.json",
 ]
+# From no credit to far past where harbor_cloud takes all 500 MW (about 9.4).
+CURTAILMENT_WEIGHTS = [step / 2 for step in range(0, 101)]
 
 
 def _bid(scenario: dict[str, Any], bidder_id: str) -> float:
@@ -53,6 +56,19 @@ def test_no_winner_pays_above_its_bid(scenario_name: str) -> None:
     assert payments
     for payment in payments:
         assert payment["payment_per_mwh_usd"] <= _bid(scenario, payment["offtaker_id"]), payment
+
+
+@pytest.mark.parametrize("scenario_name", COMMITTED_SCENARIOS)
+def test_no_winner_pays_above_its_bid_across_the_curtailment_sweep(scenario_name: str) -> None:
+    scenario = load_scenario(SCENARIOS / scenario_name)
+    violations = []
+    for weight in CURTAILMENT_WEIGHTS:
+        swept = {**scenario, "auction": {**scenario["auction"], "curtailment_weight": weight}}
+        for payment in run_simulation(swept)["payments"]:
+            if payment["payment_per_mwh_usd"] > _bid(scenario, payment["offtaker_id"]):
+                violations.append((weight, payment["offtaker_id"], payment["payment_per_mwh_usd"]))
+
+    assert violations == []
 
 
 @pytest.mark.parametrize("scenario_name", COMMITTED_SCENARIOS)

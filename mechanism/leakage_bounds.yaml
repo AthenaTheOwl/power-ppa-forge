@@ -13,4 +13,5 @@ forbidden_fields:
   - max_capacity_mw
   - counterfactual_allocations
   - losing_bidder_rank
+  - curtailable_fraction
 receipt_artifact: runs/v0_baseline/receipts.json
