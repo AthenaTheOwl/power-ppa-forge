@@ -134,3 +134,7 @@ specs/  docs/  tests/
 ## License
 
 MIT. See [LICENSE](LICENSE).
+
+## Method update
+
+[October method update: Complementary load shapes need a coincident delivery test](docs/curtailment-delivery.md).
