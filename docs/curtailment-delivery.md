@@ -2,12 +2,8 @@
 
 Method update: October 18, 2026. Proposed experiments below are not reported as executed results.
 
-The simulator allocates notional capacity and reports aggregate complementarity. A favorable average load shape does not by itself show that the portfolio can respond during the generator's stressed hours. A buyer may have little movable demand exactly when the system requests relief.
+The simulator allocates notional capacity and reports aggregate complementarity. Since [spec 0003](../specs/0003-curtailability/tasks.md) the score also credits a nominated stress-hour shed (`curtailment_weight`, `curtailable_fraction`, `asset.stress_hours`), but nothing checks delivery; see [MECHANISM-v0](../mechanism/MECHANISM-v0.md). A favorable average load shape does not by itself show that the portfolio can respond during the generator's stressed hours. A buyer may have little movable demand exactly when the system requests relief.
 
-The next proposed notional fixture should separate nominated curtailment, callable curtailment, realized metered reduction and rebound demand. Keep the stress hours fixed across mechanisms. Evaluate the delivered MW in those hours, the duration achieved, penalties under the stated contract and the post-event rebound. A pledge that misses the event should not receive the same feasibility treatment as delivered relief.
+The next proposed notional fixture should separate nominated curtailment, callable curtailment, realized metered reduction and rebound demand. Keep the stress hours fixed across fixtures and curtailment weights. Evaluate the delivered MW in those hours, the duration achieved, penalties under the stated contract and the post-event rebound. A pledge that misses the event should not earn the same score credit (the curtailment term and the stress-hour flatness shed) as delivered relief. This is the open delivery-check task in [specs/0003-curtailability/tasks.md](../specs/0003-curtailability/tasks.md).
 
-For financing interpretation, list debt tenor, contract tenor, buyer concentration and refinancing assumptions beside any equity calculation. The current equity figures remain notional scenario results. Receipt-field allowlists bound the declared output surface; they do not prove production confidentiality or strategyproofness. Preserve the mechanism's existing leakage contract while testing a new delivery assumption. This note proposes an experiment rather than adding a lender underwriting model.
-
-## References
-
-- https://github.com/3orionkings/ai-product-team/blob/main/workflows/process-change.md
+For financing interpretation, list debt tenor, contract tenor, buyer concentration and refinancing assumptions beside any equity figure. The current equity figures are notional scenario inputs (each scenario's `capital_case`), not outputs of the auction. Receipt-field allowlists bound the declared output surface; they do not prove production confidentiality or strategyproofness. Preserve the mechanism's existing leakage contract while testing a new delivery assumption. This note proposes an experiment rather than adding a lender underwriting model.
